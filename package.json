@@ -1,0 +1,20 @@
+{
+  "name": "study-hub",
+  "version": "1.0.0",
+  "description": "研途 · 考研学习中枢：学习计划 / 资料收纳 / 网页采集",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@mozilla/readability": "^0.6.0",
+    "busboy": "^1.6.0",
+    "cheerio": "^1.1.2",
+    "compression": "^1.8.2",
+    "express": "^5.1.0",
+    "linkedom": "^0.18.12",
+    "localtunnel": "^2.0.2",
+    "qrcode": "^1.5.4",
+    "vue": "^3.5.13"
+  }
+}
