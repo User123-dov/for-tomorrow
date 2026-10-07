@@ -118,3 +118,24 @@ router.delete('/wallpaper', (req, res) => {
 });
 
 module.exports = router;
+
+// ---- 安卓手机版：Termux 一键安装命令（二维码给手机扫） ----
+router.get('/termux/qr', async (req, res) => {
+  try {
+    // 一条命令完成：装环境 → 授权存储 → 找到最新下载的仓库ZIP → 解压 → 运行安装脚本
+    const cmd = [
+      'pkg install -y unzip nodejs-lts',
+      'termux-setup-storage',
+      'sleep 4',
+      'Z=$(ls -t /sdcard/Download/*for-tomorrow*.zip 2>/dev/null | head -1)',
+      'rm -rf ~/ft-tmp && mkdir -p ~/ft-tmp',
+      'unzip -q -o "$Z" -d ~/ft-tmp',
+      'cd ~/ft-tmp',
+      'D=$(dirname "$(find . -name termux-install.sh | head -1)")',
+      'cd "$D"',
+      'bash termux-install.sh',
+    ].join(' && ');
+    const qr = await tunnel.qrDataUrl(cmd);
+    res.json({ cmd, qr });
+  } catch (err) { res.status(500).json({ error: err.message }); }
+});

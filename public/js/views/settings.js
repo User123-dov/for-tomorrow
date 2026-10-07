@@ -85,6 +85,13 @@ export default {
       testing.value = '';
     }
 
+    // ---- 安卓手机版（Termux 一键安装） ----
+    const termuxQr = ref({ cmd: '', qr: '' });
+
+    async function loadTermuxQr() {
+      try { termuxQr.value = await api('/termux/qr'); } catch { /* 忽略 */ }
+    }
+
     // ---- 数据备份与恢复 ----
     const restoreFile = ref(null);
     const restoring = ref(false);
@@ -162,7 +169,7 @@ export default {
       toast('地址已复制，发给自己就能在手机上打开', 'ok');
     }
 
-    onMounted(() => { load(true); loadTunnel(); });
+    onMounted(() => { load(true); loadTunnel(); loadTermuxQr(); });
 
     return {
       settings, examDate, password, toolInfo, load,
@@ -171,7 +178,7 @@ export default {
       store, setThemeBase, setThemeAccent,
       wallFile, wallBusy, uploadWall, resetWall,
       tunnelState, tunnelBusy, toggleTunnel, copyUrl,
-      restoreFile, restoring, exportBackup, importBackup,
+      restoreFile, restoring, exportBackup, importBackup, termuxQr, loadTermuxQr,
     };
   },
   template: `
@@ -264,6 +271,24 @@ export default {
           <div v-else class="muted small" style="margin-top:8px">
             开启后会生成一个公网地址（走 SSH 加密隧道到这台电脑），手机浏览器直接打开即可，无需安装任何软件。<br>
             需要先设置上面的「访问密码」——公网地址必须加锁。
+          </div>
+        </div>
+
+        <div class="card" style="margin-top:14px;background:var(--card2)">
+          <b>📲 安卓手机版 · 一键安装（推荐）</b>
+          <div class="row wrap" style="margin-top:10px;align-items:flex-start">
+            <div style="text-align:center;flex-shrink:0">
+              <img v-if="termuxQr.qr" :src="termuxQr.qr" style="width:150px;height:150px;border:6px solid #fff;border-radius:4px">
+              <div class="muted small" style="margin-top:4px">用手机相机扫码</div>
+            </div>
+            <div class="small" style="flex:1;min-width:0;line-height:1.9">
+              扫描二维码得到<b>一条安装命令</b>，复制后：<br>
+              1. 粘贴到 <b>Termux</b> 里回车（中途弹权限窗口点「允许」）<br>
+              2. 等它跑完（会自动装 Node.js 和整个应用）<br>
+              3. Termux 里输入 <span class="kbd">bash start.sh</span> 启动<br>
+              4. 浏览器打开 <span class="kbd">localhost:5175</span>，添加到主屏幕<br>
+              <span class="muted">前置条件：手机浏览器先登录 Gitee 并下载仓库 ZIP（下一步骤）</span>
+            </div>
           </div>
         </div>
 
