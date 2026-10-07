@@ -69,7 +69,7 @@ export default {
       store.timer.taskId = t.id;
       store.timer.taskTitle = t.title;
       store.timer.subjectId = t.subject_id || null;
-      if (!store.timer.running) { startTimer(); elapsed.value = 0; tickStart(); timerRunning.value = true; }
+      if (!store.timer.running) startTimer();
     }
     const materialCount = ref(0);
     const videoCount = ref(0);

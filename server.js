@@ -99,6 +99,7 @@ app.use('/api', require('./src/routes/lingxian'));
 app.use('/api', require('./src/routes/papers'));
 app.use('/api', require('./src/routes/search'));
 app.use('/api', require('./src/routes/msr'));
+app.use('/api', require('./src/routes/backup'));
 
 app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 

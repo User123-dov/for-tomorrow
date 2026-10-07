@@ -65,20 +65,14 @@ async function ensurePlaylist() {
   return list;
 }
 
-// 歌单（携带可播放地址：msr 现场换取 CDN 链接，本地文件用 /files 路径）
+// 歌单（CDN 播放地址不在此处解析——前端播放每首时会经 /msr/song/:cid 按需换取，
+//  避免每次打开歌单都对全部曲目发起十几次外部请求）
 router.get('/msr/playlist', async (req, res, next) => {
   try {
     const list = await ensurePlaylist();
-    const songs = [];
-    for (const e of list) {
-      if (e.type === 'local') {
-        songs.push({ ...e, url: '/files/' + e.path, album: '本地音乐' });
-      } else {
-        let url = '';
-        try { url = (await songDetail(e.cid)).sourceUrl; } catch { /* 单曲失败不影响整单 */ }
-        songs.push({ ...e, url, album: e.album || '' });
-      }
-    }
+    const songs = list.map(e => e.type === 'local'
+      ? { ...e, url: '/files/' + e.path, album: '本地音乐' }
+      : { ...e, url: '', album: e.album || '' });
     res.json({ songs, total: list.length });
   } catch (err) { next(err); }
 });

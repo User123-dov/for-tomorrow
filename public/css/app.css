@@ -541,7 +541,7 @@ body[data-base="light"] .home-stats { background: rgba(255, 255, 255, .55); }
 
 /* 左侧：今日简报面板（压在壁纸上） */
 .home-panel {
-  position: absolute; left: 44px; top: 148px; bottom: 64px; width: 388px; z-index: 2;
+  position: absolute; left: 44px; top: 148px; bottom: 64px; width: 388px; z-index: 4;
   display: flex; flex-direction: column; gap: 14px;
   background: linear-gradient(160deg, rgba(11, 13, 18, .78), rgba(11, 13, 18, .6));
   border: 1px solid var(--line);
@@ -557,7 +557,7 @@ body[data-base="light"] .home-stats { background: rgba(255, 255, 255, .55); }
 }
 .hp-min:hover { border-color: var(--primary); color: var(--primary); }
 .home-panel-tab {
-  position: absolute; left: 0; top: 148px; z-index: 2;
+  position: absolute; left: 0; top: 148px; z-index: 4;
   writing-mode: vertical-rl; letter-spacing: 3px;
   border: 1px solid var(--line); border-left: 3px solid var(--accent2);
   background: var(--card); color: var(--primary); cursor: pointer;
@@ -594,8 +594,11 @@ body[data-base="light"] .home-panel { border-color: var(--line); }
 
 /* 右下角斜杠菜单 */
 .home-menu { position: relative; z-index: 2; margin-top: auto; margin-bottom: 150px;
-  display: flex; flex-direction: column; align-items: flex-end; padding: 0 44px; }
+  display: flex; flex-direction: column; align-items: flex-end; padding: 0 44px;
+  /* 菜单容器占满整行宽度，但不拦截点击，否则会盖住左侧简报面板 */
+  pointer-events: none; }
 .home-item {
+  pointer-events: auto;
   position: relative; display: flex; align-items: baseline; gap: 16px;
   background: none; border: none; cursor: pointer; padding: 11px 20px 11px 44px;
   color: var(--muted); opacity: 0; transform: translateX(36px);

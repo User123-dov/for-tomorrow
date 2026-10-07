@@ -1,7 +1,7 @@
 // 视频库：B站/YouTube 收藏、嵌入播放、观看状态、yt-dlp 下载
 import { store, api, toast, fmtDuration, navigate } from '../store.js';
 
-const { ref, reactive, computed, onMounted } = Vue;
+const { ref, reactive, computed, onMounted, onBeforeUnmount } = Vue;
 
 export default {
   setup() {
@@ -85,6 +85,7 @@ export default {
     }
 
     let pollTimer = null;
+    onBeforeUnmount(() => clearInterval(pollTimer));
     function pollJobs() {
       clearInterval(pollTimer);
       pollTimer = setInterval(async () => {

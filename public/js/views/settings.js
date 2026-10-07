@@ -85,6 +85,28 @@ export default {
       testing.value = '';
     }
 
+    // ---- 数据备份与恢复 ----
+    const restoreFile = ref(null);
+    const restoring = ref(false);
+
+    function exportBackup() { location.href = '/api/backup'; }
+
+    async function importBackup(e) {
+      const f = e.target.files?.[0];
+      e.target.value = '';
+      if (!f) return;
+      if (!f.name.endsWith('.zip')) { toast('请选择导出生成的 zip 备份文件'); return; }
+      if (!confirm('导入会覆盖当前全部数据（任务/资料/照片/设置），当前数据会先自动备份一份。确定继续吗？')) return;
+      restoring.value = true;
+      try {
+        const fd = new FormData();
+        fd.append('file', f, f.name);
+        const r = await api('/restore', { method: 'POST', body: fd });
+        toast('恢复完成！' + (r.note || ''), 'ok');
+        setTimeout(() => location.reload(), 1500);
+      } catch (err) { toast(err.message, 'err'); restoring.value = false; }
+    }
+
     // ---- 主菜单壁纸 ----
     const wallFile = ref(null);
     const wallBusy = ref(false);
@@ -149,6 +171,7 @@ export default {
       store, setThemeBase, setThemeAccent,
       wallFile, wallBusy, uploadWall, resetWall,
       tunnelState, tunnelBusy, toggleTunnel, copyUrl,
+      restoreFile, restoring, exportBackup, importBackup,
     };
   },
   template: `
@@ -179,6 +202,21 @@ export default {
         <input ref="wallFile" type="file" accept="image/*" style="display:none" @change="uploadWall">
         <span class="muted small">建议 1920×1080，深色调更清晰</span>
       </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <h3>💾 数据备份与恢复（手机 ↔ 电脑同步用这个）</h3>
+      <div class="row wrap">
+        <button class="btn ghost" @click="exportBackup">⬇️ 导出备份（下载 zip）</button>
+        <button class="btn plain" :disabled="restoring" @click="$refs.restoreFile.click()">⬆️ 导入恢复</button>
+        <input ref="restoreFile" type="file" accept=".zip" style="display:none" @change="importBackup">
+      </div>
+      <div class="muted small" style="margin-top:8px">
+        备份包含：全部任务 / 学习记录 / 资料与论文 / 打卡照片 / 音乐 / 设置。<br>
+        <b>多设备同步用法</b>：电脑上导出 → 传到手机（微信文件传输助手即可）→ 手机上导入；反过来同理。<br>
+        <span style="color:var(--warn)">导入会覆盖当前设备的全部数据</span>（覆盖前自动备份一份到 data/backup-before-restore-*）。
+      </div>
+      <div v-if="restoring" class="muted small" style="margin-top:6px">恢复中，取决于备份大小，可能需要几十秒…</div>
     </div>
 
     <div class="grid two-col" style="align-items:start">
